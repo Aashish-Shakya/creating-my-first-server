@@ -2,17 +2,50 @@ const http = require('http');
 
 const port = 8081;
 
-http
-    .createServer((request, response) => {
-        response.writeHead(200, { 'Content-Type': 'text/html' }); // this line use send success msg by using 200 
-        // response.write("<h1>Hello All, This is from my server</h1>");
-        response.write(html);
+const toDoList = ["Complete Node Byte", "Play Cricket", "Go to sleep"];
 
-        response.end();
+http.createServer((req, res) => {
+    // response.writeHead(200, { 'Content-Type': 'text/html' }); // this line use send success msg by using 200 
+    // response.write("<h1>Hello All, This is from my server</h1>");
+    // response.write(html);
+    const { method, url } = req;
+    console.log(method, url);
+    // Bydefault browser always send Get
 
-    }).listen(port, () => {
-        console.log(`Nodejs server started on port ${port}`)
-    })
+    if (url === "/todos") {
+        if (method === "GET") {
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.write(toDoList.toString());
+
+        } else if (method === "POST") {
+            let body = "";
+            req.on('error', () => {
+                console.error(err);
+            }).on('data', (chunk) => {
+                body += chunk;
+                console.log(chunk)
+
+            }).on('end', () => {
+                body = JSON.parse(body);
+                console.log("Body-->", body)
+            })
+
+        }
+
+
+        else {
+            res.writeHead(404);
+        }
+    } else {
+        res.writeHead(501);
+    }
+
+    res.end();
+
+}).listen(port, () => {
+    console.log(`Nodejs server started on port ${port}`);
+    // console.log(method, url);
+})
 
 // http://localhost:8081
 
@@ -32,4 +65,4 @@ http
 //  "dev": "nodemon server.js"
 
 
-const html = "<h1>Hello All, This is from my server</h1><h2> This is just a simple server which i created</h2>"
+// const html = "<h1>Hello All, This is from my server today</h1><h2> This is just a simple server which i created</h2>"
